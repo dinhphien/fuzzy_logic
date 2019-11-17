@@ -5,3 +5,17 @@ WIDTH_APP = 1200
 
 FPS = 60
 CAPTION_APP = "Self-Driving Car"
+
+PI = 3.14
+LANE_WIDTH = 15
+MAX_DISTANCE = 100000000
+
+
+RED = (255, 0, 0)
+BLACK = (0, 0, 0)
+BLUE = (0, 0, 255)
+
+COLOR_LIGHT = [(0, 255, 0),(255, 255, 0),(255, 0, 0)]
+
+HIDDEN = 0
+SHOW = 1

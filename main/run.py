@@ -1,59 +1,141 @@
 import sys
 import random
+import xlwt
+import xlrd
+import math
 
 import pygame
 from pygame.locals import *
 
 from graphic import map
 from graphic import car
+from graphic import light, stone
 from utils import config
+from graphic.map import MAP_NAVS, LIGHTS_POS, STONES_POS
+from utils import loader
 
+
+# def write_coordinates(tracks):
+#     workbook = xlwt.Workbook(encoding='ascii')
+#     worksheet = workbook.add_sheet('Map')
+#     worksheet.write(0, 0, 'Index')
+#     worksheet.write(0, 1, 'X')
+#     worksheet.write(0, 2, 'Y')
+#     for (k, v) in tracks.items():
+#         worksheet.write(k, 0, k)
+#         worksheet.write(k, 1, v[0])
+#         worksheet.write(k, 2, v[1])
+#     workbook.save('../media/toa-do.xlsx')
 
 def main():
     fps_clock = pygame.time.Clock()
-    running = True
-
     map_city = map.Map(0, 0)
-    car_player = car.Car(228, 45)
 
-    is_playing = False
     flag = 0
-    tracks = {}
+    tracks = MAP_NAVS
+    lights_pos = LIGHTS_POS
+    stones_pos = STONES_POS
+
+    path = [0, 1, 2, 13, 14, 12, 9, 8]
+    target_pos = tracks[path[-1]]
+    rect_target = pygame.draw.circle(screen, (255, 0, 0), (math.floor(target_pos[0]), math.floor(target_pos[1])), 20, 20)
+    car_player = car.Car()
+    lights = []
+    lights_on_path = {}
+    stones_on_path = {}
+    stones = []
+    for i in range(len(lights_pos)):
+        lights.append(light.Light(lights_pos[i][0], lights_pos[i][1], lights_pos[i][2]))
+    for i in range(len(stones_pos)):
+        stones.append(stone.Stone(stones_pos[i][0], stones_pos[i][1], stones_pos[i][2]))
+
+
+    moving = False
+    running = True
+    is_playing = -1
     while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            if event.type == pygame.MOUSEBUTTONUP:
-                flag += 1
-                tracks[flag] = event.pos
-                print(event.pos)
+        if is_playing == -1:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        is_playing = 0
+                elif event.type == MOUSEBUTTONDOWN:
+                    distance = math.hypot(event.pos[0] - rect_target.center[0], event.pos[1] - rect_target.center[1])
+                    if distance < 20:
+                        moving = True
+                elif event.type == MOUSEBUTTONUP:
+                    moving = False
+                elif event.type == MOUSEMOTION and moving:
+                    rect_target.move_ip(event.rel)
+                else:
+                    pass
+        elif is_playing == 0:
+            path = map_city.get_shortest_path(rect_target.center)
+            rect_target.center = (math.floor(tracks[path[-1]][0]), math.floor(tracks[path[-1]][1]))
+            car_player.set_path(path)
+            for index_nav in path:
+                for i in range(len(lights_pos)):
+                    if index_nav == lights_pos[i][2]:
+                        lights_on_path[index_nav] = lights[i]
+                        break
+                for i in range(len(stones_pos)):
+                    if index_nav == stones_pos[i][2]:
+                        stones_on_path[index_nav] = stones[i]
+                        break
 
+            car_player.set_light(lights_on_path)
+            car_player.set_stone(stones_on_path)
 
+            # for event in pygame.event.get():
+            #     if event.type == pygame.QUIT:
+            #         running = False
+            #     elif event.type == pygame.KEYDOWN:
+            #         if event.key == pygame.K_SPACE:
+            #             is_playing = 1
+            #     elif event.type == MOUSEBUTTONDOWN:
+            #         print(event.pos)
+            is_playing = 1
 
-        if not is_playing:
-            keys = pygame.key.get_pressed()
-            if keys[pygame.K_SPACE]:
-                is_playing = True
+        else:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                elif event.type == MOUSEBUTTONDOWN:
+                    index_stone = map_city.find_nearest_stone(event.pos)
+                    if index_stone != -1:
+                        stones[index_stone].toggle_stone()
+                    print(event.pos)
+                    print(index_stone)
+            for i in range(len(lights)):
+                lights[i].update()
+            car_player.move()
 
-        # screen.blit(background, (0, 0))
-        # x += 3
-        # y += 3
-        # map_city.update(x, y)
         screen.blit(map_city.image, map_city.rect)
-        screen.blit(car_player.image, car_player.rect)
-        for (k, v) in tracks.items():
-            image = font.render(str(k), True, (255, 0, 0))
-            screen.blit(image, v)
-            pygame.draw.circle(screen, (0,0,0), v, 5, 5)
+        rect_target = pygame.draw.circle(screen, config.RED, rect_target.center, 15, 15)
+        for i in range(len(path) -1):
+            point1 = (math.floor(tracks[path[i]][0]), math.floor(tracks[path[i]][1]))
+            point2 = (math.floor(tracks[path[i +1]][0]), math.floor(tracks[path[i +1]][1]))
+            pygame.draw.line(screen, config.BLUE, point1, point2, 7)
+
+        for i in range(len(lights)):
+            lights[i].render(screen)
+        for i in range(len(stones)):
+            stones[i].render(screen)
+
+        for i in range(len(tracks)):
+            image = font.render(str(i), True, config.RED)
+            screen.blit(image, (math.floor(tracks[i][0]), math.floor(tracks[i][1])))
+            pygame.draw.circle(screen, config.BLACK, (math.floor(tracks[i][0]), math.floor(tracks[i][1])), 5, 5)
+
+        for i in range(len(stones_pos)):
+            pygame.draw.circle(screen, config.BLACK, (math.floor(stones_pos[i][0]), math.floor(stones_pos[i][1])), 5, 5)
 
 
+        car_player.render(screen)
         pygame.display.flip()
         fps_clock.tick(config.FPS)
-
-
-
-
-
 
 if __name__ == "__main__":
     pygame.init()
