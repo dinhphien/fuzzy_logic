@@ -137,6 +137,7 @@ def main():
         pygame.display.flip()
         fps_clock.tick(config.FPS)
 
+
 if __name__ == "__main__":
     pygame.init()
 

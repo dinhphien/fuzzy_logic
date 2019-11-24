@@ -3,7 +3,7 @@
 HEIGHT_APP = 868
 WIDTH_APP = 1200
 
-FPS = 60
+FPS = 40
 CAPTION_APP = "Self-Driving Car"
 
 PI = 3.14

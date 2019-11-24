@@ -26,7 +26,7 @@ class Light(pygame.sprite.Sprite):
     def cal_remain_time(self):
         if self.status == 1:
             return random.randint(1, 5)*60
-        return random.randint(5, 30)*60
+        return random.randint(5, 15)*60
 
     def update(self):
         self.remaining_time -=1

@@ -4,6 +4,7 @@ import math
 from utils import loader
 from utils import config
 from graphic.map import MAP_NAVS
+from fuzzy_logic import fuzzy_controller
 
 
 # Rotate car.
@@ -52,13 +53,15 @@ def cal_deviation(cur_pos, cur_nav, tar_nav):
 class Car(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
+        self.fuzzy_monitor = fuzzy_controller.FuzzyController()
         self.path = []
         self.image = loader.load_image("car.png", False)
         self.image_ori = self.image
+        self.color = config.BLACK
         self.x = MAP_NAVS[0][0] - 10
         self.y = MAP_NAVS[0][1] - 10
         self.dir = 90.0
-        self.speed = 0.2
+        self.speed = 0.3
         self.deviation = 0.0
         self.angle_deviation = 0.0
         self.acceleration = 0
@@ -69,17 +72,15 @@ class Car(pygame.sprite.Sprite):
         self.cur_nav = 0
         self.rect = self.image.get_rect(center=(self.x, self.y))
         self.image, self.rect = rot_center(self.image_ori, self.rect, self.dir)
-        # print((self.x, self.y, self.speed, self.dir, self.desired_dir, self.angle_deviation))
 
     def set_path(self, path):
         self.path = path
         self.desired_dir = calculate_angle(MAP_NAVS[self.path[0]][0], MAP_NAVS[self.path[0]][1],
                                            MAP_NAVS[self.path[1]][0], MAP_NAVS[self.path[1]][1])
+        self.dir = self.desired_dir
         self.cur_nav = 0
 
     def set_light(self, lights):
-        # print(lights)
-        # print(self.path)
         lights_on_path = []
         for point_nav in self.path:
             if point_nav in lights:
@@ -87,13 +88,6 @@ class Car(pygame.sprite.Sprite):
             else:
                 lights_on_path.append(0)
         self.lights = lights_on_path
-        # print("In car")
-        # print(self.lights)
-        # for light in self.lights:
-        #     if light == 0:
-        #         pass
-        #     else:
-        #         print(light.index_nav)
 
     def set_stone(self, stones):
         stones_on_path = []
@@ -103,11 +97,6 @@ class Car(pygame.sprite.Sprite):
             else:
                 stones_on_path.append(0)
         self.stones = stones_on_path
-        # for stone in self.stones:
-        #     if stone ==0:
-        #         pass
-        #     else:
-        #         print(stone.index_nav)
 
     def distance_to_nearest_stone(self):
         if self.cur_nav != self.path[-1]:
@@ -125,7 +114,6 @@ class Car(pygame.sprite.Sprite):
     def distance_to_nearest_light(self):
         if self.cur_nav != self.path[-1]:
             if self.lights[self.cur_nav + 1] != 0:
-                # print(self.path[i])
                 distance = math.hypot(MAP_NAVS[self.path[self.cur_nav +1]][0] - self.x, MAP_NAVS[self.path[self.cur_nav+1]][1] - self.y)
                 return distance, self.lights[self.cur_nav + 1].status, math.floor(self.lights[self.cur_nav + 1].remaining_time/60)
         return float('nan'), float('nan'), float('nan')
@@ -134,8 +122,8 @@ class Car(pygame.sprite.Sprite):
         target_nav = self.cur_nav + 1
         distance_target = math.hypot(MAP_NAVS[self.path[target_nav]][0] - self.x,
                                      MAP_NAVS[self.path[target_nav]][1] - self.y)
-        # print(distance_target)
-        if distance_target < 10:
+        print(('distance_target', distance_target))
+        if distance_target < 2:
             print(
                 "---------------------------------------------------------------------------------------------------------")
             print(
@@ -152,20 +140,24 @@ class Car(pygame.sprite.Sprite):
                                                    MAP_NAVS[self.path[self.cur_nav]][1],
                                                    MAP_NAVS[self.path[self.cur_nav + 1]][0],
                                                    MAP_NAVS[self.path[self.cur_nav + 1]][1])
+                # self.color = config.COLOR_LIGHT[self.cur_nav % 3]
             else:
                 self.speed = 0
                 return 0
-        dt_light, st, ti = self.distance_to_nearest_light()
-        dt_stone = self.distance_to_nearest_stone()
-        print(dt_stone)
-        print(dt_light, st, ti)
+        distance_light, status_light, time_remaining = self.distance_to_nearest_light()
+        distance_stone = self.distance_to_nearest_stone()
 
-        # steering:
         self.deviation = cal_deviation((self.x, self.y), MAP_NAVS[self.path[self.cur_nav]],
                                        MAP_NAVS[self.path[self.cur_nav + 1]])
+        print((self.dir, self.desired_dir))
         deviation_angle = cal_deviation_angle(self.dir, self.desired_dir)
-        self.angle_deviation = deviation_angle / 10
-        self.dir += self.angle_deviation
+        self.angle_deviation = deviation_angle
+        # use fuzzy monitor:
+        x, y = self.fuzzy_monitor.control(self.deviation, status_light, distance_light, time_remaining, distance_stone, self.angle_deviation)
+
+        # steering:
+        # self.dir += self.angle_deviation
+        self.dir += x
         if self.dir < 0:
             self.dir += 360
         if self.dir > 360:
@@ -194,3 +186,4 @@ class Car(pygame.sprite.Sprite):
 
     def render(self, screen):
         screen.blit(self.image, self.rect)
+        # pygame.draw.circle(screen, self.color, (math.floor(self.x), math.floor(self.y)), 5, 5)
