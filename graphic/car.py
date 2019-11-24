@@ -116,7 +116,7 @@ class Car(pygame.sprite.Sprite):
             if self.lights[self.cur_nav + 1] != 0:
                 distance = math.hypot(MAP_NAVS[self.path[self.cur_nav +1]][0] - self.x, MAP_NAVS[self.path[self.cur_nav+1]][1] - self.y)
                 return distance, self.lights[self.cur_nav + 1].status, math.floor(self.lights[self.cur_nav + 1].remaining_time/60)
-        return float('nan'), float('nan'), float('nan')
+        return 1000, 2, 15
 
     def control(self):
         target_nav = self.cur_nav + 1
@@ -149,7 +149,7 @@ class Car(pygame.sprite.Sprite):
 
         self.deviation = cal_deviation((self.x, self.y), MAP_NAVS[self.path[self.cur_nav]],
                                        MAP_NAVS[self.path[self.cur_nav + 1]])
-        print((self.dir, self.desired_dir))
+        print((self.dir, self.desired_dir, ))
         deviation_angle = cal_deviation_angle(self.dir, self.desired_dir)
         self.angle_deviation = deviation_angle
         # use fuzzy monitor:
@@ -157,13 +157,15 @@ class Car(pygame.sprite.Sprite):
 
         # steering:
         # self.dir += self.angle_deviation
-        self.dir += x
+        self.dir = self.desired_dir + x
+        # self.dir += x
         if self.dir < 0:
             self.dir += 360
         if self.dir > 360:
             self.dir -= 360
         # adjust speed:
-        self.speed += self.acceleration
+        # self.speed += self.acceleration
+        self.speed = y
 
     def move(self):
         self.control()

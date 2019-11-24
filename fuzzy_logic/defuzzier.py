@@ -93,6 +93,7 @@ import matplotlib.pyplot as plt
 #     return label, degree
 
 def defuzzify(Output_fuzzy_set, coefficient, flag):
+
     if flag:
         # steering:
         if Output_fuzzy_set == 'Hard_right':
@@ -316,7 +317,9 @@ def defuzzify(Output_fuzzy_set, coefficient, flag):
         # return fx
     else:
         # speed:
+        # print((Output_fuzzy_set, coefficient))
         if Output_fuzzy_set == 'Stop':
+            # print('Stop defuzification')
             if coefficient == 1:
                 def fx(x):
                     if x == 0:
@@ -357,6 +360,7 @@ def defuzzify(Output_fuzzy_set, coefficient, flag):
                         return 0.0
 
         elif Output_fuzzy_set == 'Slower':
+            # print('Slower defuzification')
             if coefficient == 1:
                 def fx(x):
                     if 0.1 < x <= 0.3:
@@ -399,6 +403,7 @@ def defuzzify(Output_fuzzy_set, coefficient, flag):
                         return 0.0
 
         elif Output_fuzzy_set == 'Slow':
+            # print('Slow defuzification')
             if coefficient == 1:
                 def fx(x):
                     if 0.4 <= x < 0.6:
@@ -417,6 +422,7 @@ def defuzzify(Output_fuzzy_set, coefficient, flag):
                         return 0.0
 
             else:
+
                 x0 = 0.2 * coefficient + 0.4
                 x1 = 0.8 - 0.2 * coefficient
 
@@ -441,6 +447,7 @@ def defuzzify(Output_fuzzy_set, coefficient, flag):
                         return 0.0
 
         else:
+            # print('Straight defuzification')
             if coefficient == 1:
                 def fx(x):
                     if 0.7 <= x < 0.9:

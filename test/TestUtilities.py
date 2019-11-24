@@ -6,41 +6,39 @@
 # print(theSet)
 import numpy as np
 from scipy.integrate  import quad
-def fx(x):
-    coe = 0.8118558263232802
-    x0 = 5 * coe - 5
-    x1 = 5 - 5 * coe
-    # print(x0, x1)
-    if -5 < x <= x0:
-        return (x + 5) / 5
-    elif x0 < x <= x1:
-        return coe
-    elif x1 < x <= 5:
-        return (5 - x) / 5
-    else:
-        return 0.0
+from fuzzy_logic import defuzzier, fuzzier
 
-def xfx(x):
-    coe = 0.8118558263232802
-    x0 = 5 * coe - 5
-    x1 = 5 - 5 * coe
-    # print(x0, x1)
-    if -5 < x <= x0:
-        return (x + 5) * x / 5
-    elif x0 < x <= x1:
-        return coe * x
-    elif x1 < x <= 5:
-        return (5 - x) * x / 5
-    else:
-        return 0.0
-result= quad(fx, -15, 15, limit=100)
-print(len(result))
-print(result)
-print(result[-1])
-# space_x = np.arange(-15, 15, 0.01)
-# y = [fx(x) for x in space_x]
+# coefficient = 0.9407208683835986
+# x0 = 0.2 * coefficient + 0.4
+# x1 = 0.8 - 0.2 * coefficient
+#
+# def fx(x):
+#     if 0.4 <= x < x0:
+#         return (x - 0.4) / 0.2
+#     elif x0 <= x < x1:
+#         return coefficient
+#     elif x1 <= x < 0.8:
+#         return (0.8 - x) / 0.2
+#     else:
+#         return 0.0
+#
+# def xfx(x):
+#     if 0.4 <= x < x0:
+#         return (x - 0.4) * x / 0.2
+#     elif x0 <= x < x1:
+#         return coefficient * x
+#     elif x1 <= x < 0.8:
+#         return (0.8 - x) * x / 0.2
+#     else:
+#         return 0.0
+# result1, error1 = quad(fx, -15, 15, limit=100)
+# result2, error2 = quad(xfx, -15, 15, limit = 100)
 
-# print(y)
+# print((result2, result1))
+# x = -4.999999999652145
+# y = defuzzier.defuzzify('Left', 0.9407208683835986, True)
+y = fuzzier.light_yellow(1, 0)
+print(y)
 
 
 

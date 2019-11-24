@@ -3,52 +3,57 @@
 from matplotlib import pyplot as plt
 import numpy as np
 
+
 def deviation_far_right(deviation):
     label = 'Far_right'
     degree = 0.0
-    if 0 <= deviation <= 5:
+    if 0 <= deviation <= 13:
         degree = 1.0
-    elif 5 < deviation < 10:
-        degree = (10 - deviation) / 5
+    elif 13 < deviation < 14:
+        degree = (14 - deviation)
     return label, degree
 
 
 def deviation_right(deviation):
     label = 'Right'
     degree = 0.0
-    if 5 < deviation <= 10:
-        degree = (deviation - 5) / 5
-    elif 10 < deviation < 15:
-        degree = (15 - deviation) / 5
+    if 13 < deviation <= 14:
+        degree = (deviation - 13)
+    elif 14 < deviation < 15:
+        degree = (15 - deviation)
     return label, degree
 
 
 def deviation_middle(deviation):
     label = 'Middle'
     degree = 0.0
-    if 10 < deviation <= 15:
-        degree = (deviation - 10) / 5
-    elif 15 < deviation <= 20:
-        degree = (20 - deviation) / 5
+    # if 10 < deviation <= 15:
+    #     degree = (deviation - 10) / 5
+    # elif 15 < deviation <= 20:
+    #     degree = (20 - deviation) / 5
+    if 14 < deviation <= 15:
+        degree = (deviation - 14)
+    elif 15 < deviation <= 16:
+        degree = (16 - deviation)
     return label, degree
 
 
 def deviation_left(deviation):
     label = 'Left'
     degree = 0.0
-    if 15 < deviation <= 20:
-        degree = (deviation - 15) / 5
-    elif 20 < deviation <= 25:
-        degree = (25 - deviation) / 5
+    if 15 < deviation <= 16:
+        degree = (deviation - 15)
+    elif 16 < deviation <= 17:
+        degree = (17 - deviation)
     return label, degree
 
 
 def deviation_far_left(deviation):
     label = 'Far_left'
     degree = 0.0
-    if 20 < deviation <= 25:
-        degree = (deviation - 20) / 5
-    elif deviation > 25:
+    if 16 < deviation <= 17:
+        degree = (deviation - 16)
+    elif deviation > 17:
         degree = 1.0
     return label, degree
 
@@ -158,7 +163,9 @@ def light_yellow(status_light, remaining_time):
     label = 'Yellow'
     degree = 0.0
     if status_light == 1:
-        if 0 <= remaining_time < 3:
+        if remaining_time == 0:
+            return 0.1
+        elif 0 < remaining_time < 3:
             degree = remaining_time / 3
         elif remaining_time >= 3:
             degree = 1.0
