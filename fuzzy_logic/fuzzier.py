@@ -163,8 +163,8 @@ def light_yellow(status_light, remaining_time):
     label = 'Yellow'
     degree = 0.0
     if status_light == 1:
-        if remaining_time == 0:
-            return 0.1
+        if remaining_time == 0.0:
+            degree = 0.2
         elif 0 < remaining_time < 3:
             degree = remaining_time / 3
         elif remaining_time >= 3:

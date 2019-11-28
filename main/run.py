@@ -132,7 +132,6 @@ def main():
         for i in range(len(stones_pos)):
             pygame.draw.circle(screen, config.BLACK, (math.floor(stones_pos[i][0]), math.floor(stones_pos[i][1])), 5, 5)
 
-
         car_player.render(screen)
         pygame.display.flip()
         fps_clock.tick(config.FPS)
@@ -144,12 +143,6 @@ if __name__ == "__main__":
     screen = pygame.display.set_mode((config.WIDTH_APP,config.HEIGHT_APP))
     pygame.display.set_caption(config.CAPTION_APP)
     font = pygame.font.Font(None, 24)
-
-
-    # new background surface
-    # background = pygame.Surface(screen.get_size())
-    # background = background.convert_alpha(background)
-    # background.fill((82, 86, 94))
 
     main()
 

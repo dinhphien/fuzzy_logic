@@ -10,7 +10,8 @@ class FuzzyController():
         self.deviation_rules = fuzzy_rule_base.read_deviation_rules()
         self.membership_functions = fuzzier.read_membership_functions()
 
-    def fuzzification(self, deviation, status_light, distance_light, remaining_time, distance_stone, flag):
+    def fuzzification(self, deviation, status_light, distance_light, remaining_time, distance_stone):
+        print((deviation, status_light, distance_light, remaining_time, distance_stone))
         dependencies = {}
         dev_dependency = []
         light_status_dependency = []
@@ -21,64 +22,67 @@ class FuzzyController():
             if degree > 0.0:
                 dev_dependency.append((label, degree))
         dependencies['deviation'] = dev_dependency
-        if flag:
-            for light_func in self.membership_functions['light']:
-                label, degree = light_func(status_light, remaining_time)
-                if degree > 0.0:
-                    light_status_dependency.append((label, degree))
-            for dis_func in self.membership_functions['distance']:
-                label, degree = dis_func(distance_light)
-                if degree > 0.0:
-                    light_dis_dependency.append((label, degree))
-            dependencies['status_light'] = light_status_dependency
-            dependencies['distance_light'] = light_dis_dependency
-        else:
-            for dis_func in self.membership_functions['distance']:
-                label, degree = dis_func(distance_stone)
-                if degree > 0.0:
-                    stone_dis_dependency.append((label, degree))
-            dependencies['distance_stone'] = stone_dis_dependency
+
+        for light_func in self.membership_functions['light']:
+            label, degree = light_func(status_light, remaining_time)
+            if degree > 0.0:
+                light_status_dependency.append((label, degree))
+        for dis_func in self.membership_functions['distance']:
+            label, degree = dis_func(distance_light)
+            if degree > 0.0:
+                light_dis_dependency.append((label, degree))
+        dependencies['status_light'] = light_status_dependency
+        dependencies['distance_light'] = light_dis_dependency
+
+        for dis_func in self.membership_functions['distance']:
+            label, degree = dis_func(distance_stone)
+            if degree > 0.0:
+                stone_dis_dependency.append((label, degree))
+        dependencies['distance_stone'] = stone_dis_dependency
+
         return dependencies
 
-    def inference(self, dependencies, flag):
+    def inference(self, dependencies):
         inferencies = {}
         light_infer = set()
         dev_infer = set()
         stone_infer = set()
+
         for fuzzified_dev in dependencies['deviation']:
             for dev_rule in self.deviation_rules:
                 if fuzzified_dev[0] == dev_rule[0]:
                     dev_infer.add((dev_rule, fuzzified_dev[1]))
                     break
         inferencies['steering'] = dev_infer
-        if flag:
-            for fuzzified_status_light in dependencies['status_light']:
-                for fuzzified_distance_light in dependencies['distance_light']:
-                    for fuzzified_dev in dependencies['deviation']:
-                        for light_rule in self.lights_rules:
-                            if light_rule[0] == '':
-                                if fuzzified_distance_light[0] == light_rule[1] and fuzzified_dev[0] == light_rule[2]:
-                                    light_infer.add((light_rule, min((fuzzified_distance_light[1], fuzzified_dev[1]))))
-                            elif light_rule[1] == '':
-                                if fuzzified_status_light[0] == light_rule[0] and fuzzified_dev[0] == light_rule[2]:
-                                    light_infer.add((light_rule, min((fuzzified_status_light[1], fuzzified_dev[1]))))
-                            elif light_rule[2] == '':
-                                if fuzzified_status_light[0] == light_rule[0] and fuzzified_distance_light[0] == light_rule[1]:
-                                    light_infer.add((light_rule, min(fuzzified_status_light[1], fuzzified_distance_light[1])))
-                            else:
-                                if fuzzified_status_light[0] == light_rule[0] and fuzzified_distance_light[0] == light_rule[1] and fuzzified_dev[0] == light_rule[2]:
-                                    light_infer.add((light_rule, min((fuzzified_status_light[1], fuzzified_distance_light[1], fuzzified_dev[1]))))
-            inferencies['light'] = light_infer
-        else:
-            for fuzzified_distance_stone in dependencies['distance_stone']:
+
+        for fuzzified_status_light in dependencies['status_light']:
+            for fuzzified_distance_light in dependencies['distance_light']:
                 for fuzzified_dev in dependencies['deviation']:
-                    for stone_rule in self.stones_rules:
-                        if stone_rule[1] == '':
-                            if fuzzified_distance_stone[0] == stone_rule[0]:
-                                stone_infer.add((stone_rule, fuzzified_distance_stone[1]))
-                        elif fuzzified_distance_stone[0] == stone_rule[0] and fuzzified_dev[0] == stone_rule[1]:
-                            stone_infer.add((stone_rule, min((fuzzified_distance_stone[1],fuzzified_dev[1]))))
-            inferencies['stone'] = stone_infer
+                    for light_rule in self.lights_rules:
+                        if light_rule[0] == '':
+                            if fuzzified_distance_light[0] == light_rule[1] and fuzzified_dev[0] == light_rule[2]:
+                                light_infer.add((light_rule, min((fuzzified_distance_light[1], fuzzified_dev[1]))))
+                        elif light_rule[1] == '':
+                            if fuzzified_status_light[0] == light_rule[0] and fuzzified_dev[0] == light_rule[2]:
+                                light_infer.add((light_rule, min((fuzzified_status_light[1], fuzzified_dev[1]))))
+                        elif light_rule[2] == '':
+                            if fuzzified_status_light[0] == light_rule[0] and fuzzified_distance_light[0] == light_rule[1]:
+                                light_infer.add((light_rule, min(fuzzified_status_light[1], fuzzified_distance_light[1])))
+                        else:
+                            if fuzzified_status_light[0] == light_rule[0] and fuzzified_distance_light[0] == light_rule[1] and fuzzified_dev[0] == light_rule[2]:
+                                light_infer.add((light_rule, min((fuzzified_status_light[1], fuzzified_distance_light[1], fuzzified_dev[1]))))
+        inferencies['light'] = light_infer
+
+        for fuzzified_distance_stone in dependencies['distance_stone']:
+            for fuzzified_dev in dependencies['deviation']:
+                for stone_rule in self.stones_rules:
+                    if stone_rule[1] == '':
+                        if fuzzified_distance_stone[0] == stone_rule[0]:
+                            stone_infer.add((stone_rule, fuzzified_distance_stone[1]))
+                    elif fuzzified_distance_stone[0] == stone_rule[0] and fuzzified_dev[0] == stone_rule[1]:
+                        stone_infer.add((stone_rule, min((fuzzified_distance_stone[1],fuzzified_dev[1]))))
+        inferencies['stone'] = stone_infer
+
         return inferencies
 
     def defuzzification(self,consequents_args, flag):
@@ -99,28 +103,39 @@ class FuzzyController():
             return result, de_rray
         return float('nan'), float('nan')
 
-
     def control(self, deviation, status_light, distance_light, remaining_time, distance_stone, angle_deviation):
 
-        flag = True
-        if not math.isnan(distance_stone):
-            flag = False
-        dependencies = self.fuzzification(deviation, status_light, distance_light, remaining_time, distance_stone, flag)
-        inferences = self.inference(dependencies, flag)
-        print("////////////////////////////////////////////////////////////////////////////////////")
-        print((deviation, status_light, distance_light, remaining_time, distance_stone))
-        print(dependencies)
-        print(inferences)
+        dependencies = self.fuzzification(deviation, status_light, distance_light, remaining_time, distance_stone)
+
+        inferences = self.inference(dependencies)
         steering_angle, de_values_steering = self.defuzzification(inferences['steering'], True)
-        speed = float('nan')
+        if len(inferences['stone']) > 0:
+            # print("In stone fuzzy logic")
+            # print("////////////////////////////////////////////////////////////////////////////////////")
+            # print((deviation, status_light, distance_light, remaining_time, distance_stone))
+            # print(dependencies)
+            # print(inferences)
+            speed, de_values_speed = self.defuzzification(inferences['stone'], False)
+            # print(("steering_angle: ", steering_angle))
+            # print(('defuzification_steering: ', de_values_steering))
+            # print(('speed: ', speed))
+            # print(('defuzification_speed: ', de_values_speed))
+            # print(("angle_deviation: ", angle_deviation))
+            # print(flag)
+            # print("//////////////////////////////////////////////////////////////////////////////////////")
+            return steering_angle, speed
+        # print("////////////////////////////////////////////////////////////////////////////////////")
+        # print((deviation, status_light, distance_light, remaining_time, distance_stone))
+        # print(dependencies)
+        # print(inferences)
         speed, de_values_speed = self.defuzzification(inferences['light'], False)
-        print(("steering_angle: ", steering_angle))
-        print(('defuzification_steering: ', de_values_steering))
-        print(('speed: ', speed))
-        print(('defuzification_speed: ', de_values_speed))
-        print(("angle_deviation: ", angle_deviation))
-        # print(flag)
-        print("//////////////////////////////////////////////////////////////////////////////////////")
+        # print(("steering_angle: ", steering_angle))
+        # print(('defuzification_steering: ', de_values_steering))
+        # print(('speed: ', speed))
+        # print(('defuzification_speed: ', de_values_speed))
+        # print(("angle_deviation: ", angle_deviation))
+        # # print(flag)
+        # print("//////////////////////////////////////////////////////////////////////////////////////")
 
         return steering_angle, speed
 

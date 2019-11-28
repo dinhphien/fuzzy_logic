@@ -109,20 +109,20 @@ class Car(pygame.sprite.Sprite):
                     return distance
                 else:
                     pass
-        return float('nan')
+        return config.MAX_DISTANCE
 
     def distance_to_nearest_light(self):
         if self.cur_nav != self.path[-1]:
             if self.lights[self.cur_nav + 1] != 0:
                 distance = math.hypot(MAP_NAVS[self.path[self.cur_nav +1]][0] - self.x, MAP_NAVS[self.path[self.cur_nav+1]][1] - self.y)
                 return distance, self.lights[self.cur_nav + 1].status, math.floor(self.lights[self.cur_nav + 1].remaining_time/60)
-        return 1000, 2, 15
+        return config.MAX_DISTANCE, 2, 15
 
     def control(self):
         target_nav = self.cur_nav + 1
         distance_target = math.hypot(MAP_NAVS[self.path[target_nav]][0] - self.x,
                                      MAP_NAVS[self.path[target_nav]][1] - self.y)
-        print(('distance_target', distance_target))
+        # print(('distance_target', distance_target))
         if distance_target < 2:
             print(
                 "---------------------------------------------------------------------------------------------------------")
@@ -149,15 +149,15 @@ class Car(pygame.sprite.Sprite):
 
         self.deviation = cal_deviation((self.x, self.y), MAP_NAVS[self.path[self.cur_nav]],
                                        MAP_NAVS[self.path[self.cur_nav + 1]])
-        print((self.dir, self.desired_dir, ))
+        # print((self.deviation, distance_light, status_light, time_remaining, distance_stone))
         deviation_angle = cal_deviation_angle(self.dir, self.desired_dir)
         self.angle_deviation = deviation_angle
         # use fuzzy monitor:
-        x, y = self.fuzzy_monitor.control(self.deviation, status_light, distance_light, time_remaining, distance_stone, self.angle_deviation)
+        steering_angle, speed = self.fuzzy_monitor.control(self.deviation, status_light, distance_light, time_remaining, distance_stone, self.angle_deviation)
 
         # steering:
         # self.dir += self.angle_deviation
-        self.dir = self.desired_dir + x
+        self.dir = self.desired_dir + steering_angle
         # self.dir += x
         if self.dir < 0:
             self.dir += 360
@@ -165,7 +165,7 @@ class Car(pygame.sprite.Sprite):
             self.dir -= 360
         # adjust speed:
         # self.speed += self.acceleration
-        self.speed = y
+        self.speed = speed
 
     def move(self):
         self.control()

@@ -324,28 +324,28 @@ def defuzzify(Output_fuzzy_set, coefficient, flag):
                 def fx(x):
                     if x == 0:
                         return 1.0
-                    elif 0 < x <= 0.1:
-                        return (0.1 - x) / 0.1
+                    elif 0 < x <= 0.05:
+                        return (0.05 - x) / 0.05
                     else:
                         return 0.0
 
                 def xfx(x):
                     if x == 0:
                         return 1.0 * x
-                    elif 0 < x <= 0.1:
-                        return (0.1 - x) * x/ 0.1
+                    elif 0 < x <= 0.05:
+                        return (0.05 - x) * x/ 0.05
                     else:
                         return 0.0
             else:
-                x0 = 0.1 - 0.1 * coefficient
+                x0 = 0.05 - 0.05 * coefficient
 
                 def fx(x):
                     if x == 0:
                         return 1.0
                     elif 0< x <= x0:
                         return coefficient
-                    elif x0 < x <= 0.1:
-                        return (0.1 - x) / 0.1
+                    elif x0 < x <= 0.05:
+                        return (0.05 - x) / 0.05
                     else:
                         return 0.0
 
@@ -354,8 +354,8 @@ def defuzzify(Output_fuzzy_set, coefficient, flag):
                         return 1.0 * x
                     elif 0 < x <= x0:
                         return coefficient * x
-                    elif x0 < x <= 0.1:
-                        return (0.1 - x) * x / 0.1
+                    elif x0 < x <= 0.05:
+                        return (0.05 - x) * x / 0.05
                     else:
                         return 0.0
 
@@ -363,28 +363,28 @@ def defuzzify(Output_fuzzy_set, coefficient, flag):
             # print('Slower defuzification')
             if coefficient == 1:
                 def fx(x):
-                    if 0.1 < x <= 0.3:
-                        return (x - 0.1) / 0.2
+                    if 0.05 < x <= 0.3:
+                        return (x - 0.05) / 0.25
                     elif 0.3 < x <= 0.5:
                         return (0.5 - x) / 0.2
                     else:
                         return 0.0
 
                 def xfx(x):
-                    if 0.1 < x <= 0.3:
-                        return (x - 0.1) * x / 0.2
+                    if 0.05 < x <= 0.3:
+                        return (x - 0.05) * x / 0.25
                     elif 0.3 < x <= 0.5:
                         return (0.5 - x) * x / 0.2
                     else:
                         return 0.0
 
             else:
-                x0 = 0.2 * coefficient + 0.1
+                x0 = 0.25 * coefficient + 0.05
                 x1 = 0.5 - 0.2 * coefficient
 
                 def fx(x):
-                    if 0.1 < x <= x0:
-                        return (x - 0.1) / 0.2
+                    if 0.05 < x <= x0:
+                        return (x - 0.05) / 0.25
                     elif x0 < x <= x1:
                         return coefficient
                     elif x1 < x <= 0.5:
@@ -393,8 +393,8 @@ def defuzzify(Output_fuzzy_set, coefficient, flag):
                         return 0.0
 
                 def xfx(x):
-                    if 0.1 < x <= x0:
-                        return (x - 0.1) * x / 0.2
+                    if 0.05 < x <= x0:
+                        return (x - 0.05) * x / 0.25
                     elif x0 < x <= x1:
                         return coefficient * x
                     elif x1 < x <= 0.5:
