@@ -1,7 +1,20 @@
 from fuzzy_logic import fuzzy_rule_base, fuzzier, defuzzier, fuzzy_inference_engine
+from utils import config
 import math
 import numpy as np
 
+
+def nor_deviation(dev):
+    return dev / config.LANE_SIZE
+
+
+def nor_time_light(status_light, time_remaining):
+    if status_light == 0:
+        return 10 - time_remaining
+    elif status_light == 1:
+        return 15 - time_remaining
+    else:
+        return 25 - time_remaining
 
 class FuzzyController():
     def __init__(self):
@@ -10,8 +23,8 @@ class FuzzyController():
         self.deviation_rules = fuzzy_rule_base.read_deviation_rules()
         self.membership_functions = fuzzier.read_membership_functions()
 
-    def fuzzification(self, deviation, status_light, distance_light, remaining_time, distance_stone):
-        print((deviation, status_light, distance_light, remaining_time, distance_stone))
+    def fuzzification(self, deviation, time, distance_light, distance_stone):
+        # print((deviation, status_light, distance_light, remaining_time, distance_stone))
         dependencies = {}
         dev_dependency = []
         light_status_dependency = []
@@ -24,7 +37,7 @@ class FuzzyController():
         dependencies['deviation'] = dev_dependency
 
         for light_func in self.membership_functions['light']:
-            label, degree = light_func(status_light, remaining_time)
+            label, degree = light_func(time)
             if degree > 0.0:
                 light_status_dependency.append((label, degree))
         for dis_func in self.membership_functions['distance']:
@@ -104,10 +117,14 @@ class FuzzyController():
         return float('nan'), float('nan')
 
     def control(self, deviation, status_light, distance_light, remaining_time, distance_stone, angle_deviation):
+        normed_deviation = nor_deviation(deviation)
+        time = nor_time_light(status_light, remaining_time)
 
-        dependencies = self.fuzzification(deviation, status_light, distance_light, remaining_time, distance_stone)
+        dependencies = self.fuzzification(normed_deviation, time, distance_light, distance_stone)
 
         inferences = self.inference(dependencies)
+        # print(dependencies)
+        # print(inferences)
         steering_angle, de_values_steering = self.defuzzification(inferences['steering'], True)
         if len(inferences['stone']) > 0:
             # print("In stone fuzzy logic")
@@ -144,5 +161,5 @@ class FuzzyController():
 
 
 # fu = FuzzyController()
-# dep = fu.control(14.059279131616401, float('nan'), float('nan'), float('nan'), float('nan'))
+# dep = fu.control(14.059279131616401, 2 , 80, 0, 1000, 46)
 

@@ -37,8 +37,10 @@ from fuzzy_logic import defuzzier, fuzzier
 # print((result2, result1))
 # x = -4.999999999652145
 # y = defuzzier.defuzzify('Left', 0.9407208683835986, True)
-y = fuzzier.light_yellow(1, 0)
-print(y)
+# y = fuzzier.light_yellow(1, 0)
+# print(y)
+x = 0.6 - 0.5
+print(x / 0.1)
 
 
 

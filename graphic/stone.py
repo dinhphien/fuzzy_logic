@@ -14,11 +14,25 @@ class Stone(pygame.sprite.Sprite):
         self.rect.center = self.x, self.y
         self.index_nav = index_nav
         self.status = config.HIDDEN
+        self.time_appearance = 0
 
-    def toggle_stone(self):
-        if self.status == config.HIDDEN:
-            self.status = config.SHOW
-        else:
+    # def toggle_stone(self):
+    #     if self.status == config.HIDDEN:
+    #         self.status = config.SHOW
+    #     else:
+    #         self.status = config.HIDDEN
+    def show_stone(self, pos, time_appearance=3):
+        if time_appearance < 2:
+            time_appearance = 3
+        self.time_appearance = time_appearance * config.FPS
+        self.x = pos[0]
+        self.y = pos[1]
+        self.rect.center = (pos[0], pos[1])
+        self.status = config.SHOW
+
+    def update_time_remaining(self):
+        self.time_appearance -= 1
+        if self.time_appearance == 0:
             self.status = config.HIDDEN
 
     def render(self, screen):

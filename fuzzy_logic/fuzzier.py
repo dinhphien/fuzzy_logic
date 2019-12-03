@@ -5,56 +5,53 @@ import numpy as np
 
 
 def deviation_far_right(deviation):
-    label = 'Far_right'
+    label = 'Far_left'
     degree = 0.0
-    if 0 <= deviation <= 13:
+    if 0 <= deviation <= 0.25:
         degree = 1.0
-    elif 13 < deviation < 14:
-        degree = (14 - deviation)
+    elif 0.25 < deviation < 0.4:
+        degree = (0.4 - deviation) / 0.15
     return label, degree
 
 
 def deviation_right(deviation):
-    label = 'Right'
+    label = 'Left'
     degree = 0.0
-    if 13 < deviation <= 14:
-        degree = (deviation - 13)
-    elif 14 < deviation < 15:
-        degree = (15 - deviation)
+    if 0.25 <= deviation <= 0.4:
+        degree = (deviation - 0.25) / 0.15
+    elif 0.4 < deviation < 0.5:
+        degree = (0.5 - deviation) / 0.1
     return label, degree
 
 
 def deviation_middle(deviation):
     label = 'Middle'
     degree = 0.0
-    # if 10 < deviation <= 15:
-    #     degree = (deviation - 10) / 5
-    # elif 15 < deviation <= 20:
-    #     degree = (20 - deviation) / 5
-    if 14 < deviation <= 15:
-        degree = (deviation - 14)
-    elif 15 < deviation <= 16:
-        degree = (16 - deviation)
+    if 0.4 <= deviation <= 0.5:
+        degree = (deviation - 0.4) / 0.1
+    elif 0.5 < deviation <= 0.6:
+        degree = (0.6 - deviation) / 0.1
     return label, degree
 
 
 def deviation_left(deviation):
-    label = 'Left'
+    label = 'Right'
     degree = 0.0
-    if 15 < deviation <= 16:
-        degree = (deviation - 15)
-    elif 16 < deviation <= 17:
-        degree = (17 - deviation)
+    if 0.5 <= deviation <= 0.6:
+        degree = (deviation - 0.5) / 0.1
+    elif 0.6 < deviation <= 0.75:
+        degree = (0.75 - deviation) / 0.15
     return label, degree
 
 
 def deviation_far_left(deviation):
-    label = 'Far_left'
+    label = 'Far_right'
     degree = 0.0
-    if 16 < deviation <= 17:
-        degree = (deviation - 16)
-    elif deviation > 17:
+    if 0.6 <= deviation < 0.75:
+        degree = (deviation - 0.6) / 0.15
+    elif 0.75 <= deviation <= 1:
         degree = 1.0
+    # print(degree)
     return label, degree
 
 
@@ -114,65 +111,61 @@ def steering_hard_left(angle):
 
 # lights' status membership functions:
 
-
-def light_green(status_light, remaining_time):
+def light_green(time):
     label = 'Green'
     degree = 0.0
-    if status_light == 0:
-        if 3 < remaining_time <= 6:
-            degree = (remaining_time - 3) / 3
-        elif remaining_time > 6:
-            degree = 1.0
+    if 0 <= time <= 4:
+        degree = 1.0
+    elif 4 < time <= 7:
+        degree = (7 - time) / 3
     return label, degree
 
 
-def light_less_green(status_light, remaining_time):
+def light_less_green(time):
     label = 'Less_green'
     degree = 0.0
-    if status_light == 0:
-        if 0 <= remaining_time <= 3:
-            degree = 1.0
-        elif 3 < remaining_time <= 6:
-            degree = (6 - remaining_time) / 3
+    if 4 <= time <= 7:
+        degree = (time - 4) / 3
+    elif 7 < time <= 10:
+        degree = (10 - time) / 3
     return label, degree
 
 
-def light_red(status_light, remaining_time):
-    label = 'Red'
-    degree = 0.0
-    if status_light == 2:
-        if 3 < remaining_time <= 6:
-            degree = (remaining_time - 3) / 3
-        elif remaining_time > 6:
-            degree = 1.0
-    return label, degree
-
-
-def light_less_red(status_light, remaining_time):
-    label = 'Less_red'
-    degree = 0.0
-    if status_light == 2:
-        if 0 <= remaining_time <= 3:
-            degree = 1.0
-        elif 3 < remaining_time <= 6:
-            degree = (6 - remaining_time) / 3
-    return label, degree
-
-
-def light_yellow(status_light, remaining_time):
+def light_yellow(time):
     label = 'Yellow'
     degree = 0.0
-    if status_light == 1:
-        if remaining_time == 0.0:
-            degree = 0.2
-        elif 0 < remaining_time < 3:
-            degree = remaining_time / 3
-        elif remaining_time >= 3:
-            degree = 1.0
+    if 8 <= time <= 10:
+        degree = (time - 8) / 2
+    elif 10 < time <= 12:
+        degree = 1.0
+    elif 12 < time <= 15:
+        degree = (15 - time) / 3
     return label, degree
 
 
+def light_red(time):
+    label = 'Red'
+    degree = 0.0
+    if 12 <= time <= 15:
+        degree = (time - 12) / 3
+    elif 15 < time <= 19:
+        degree = 1.0
+    elif 19 < time <= 22:
+        degree = (22 - time) / 3
+    return label, degree
+
+
+def light_less_red(time):
+    label = 'Less_red'
+    degree = 0.0
+    if 19 <= time <= 22:
+        degree = (time - 19) / 3
+    elif 22 < time <= 25:
+        degree = 1.0
+    return label, degree
+
 # distance membership functions:
+
 
 def distance_near(distance):
     label = 'Near'
@@ -212,26 +205,26 @@ def speed_stop(speed):
     degree = 0.0
     if speed == 0:
         degree = 1.0
-    elif 0 < speed <= 0.1:
-        degree = (0.1 - speed) / 0.1
+    elif 0 < speed <= 0.05:
+        degree = (0.05 - speed) / 0.05
     return label, degree
 
 
 def speed_slower(speed):
     label = 'Slower'
     degree = 0.0
-    if 0.1 < speed <= 0.3:
-        degree = (speed - 0.1) / 0.2
-    elif 0.3 < speed <= 0.5:
-        degree = (0.5 - speed) / 0.2
+    if 0 <= speed <= 0.3:
+        degree = speed / 0.3
+    elif 0.3 < speed <= 0.6:
+        degree = (0.6 - speed) / 0.3
     return label, degree
 
 
 def speed_slow(speed):
     label = 'Slow'
     degree = 0.0
-    if 0.4 <= speed < 0.6:
-        degree = (speed - 0.4) / 0.2
+    if 0.3 <= speed < 0.6:
+        degree = (speed - 0.3) / 0.3
     elif 0.6 <= speed < 0.8:
         degree = (0.8 - speed) / 0.2
     return label, degree
@@ -242,7 +235,7 @@ def speed_medium(speed):
     degree = 0.0
     if 0.7 <= speed < 0.9:
         degree = (speed - 0.7) / 0.2
-    elif 0.9 <= speed <= 1.5:
+    elif 0.9 <= speed <= 1.0:
         degree = 1.0
     return label, degree
 

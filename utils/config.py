@@ -3,7 +3,7 @@
 HEIGHT_APP = 868
 WIDTH_APP = 1200
 
-FPS = 40
+FPS = 30
 CAPTION_APP = "Self-Driving Car"
 
 PI = 3.14
@@ -19,3 +19,9 @@ COLOR_LIGHT = [(0, 255, 0),(255, 255, 0),(255, 0, 0)]
 
 HIDDEN = 0
 SHOW = 1
+
+LANE_SIZE = 40
+# turn:
+STRAIGHT = 0
+LEFT = 1
+RIGHT = 2

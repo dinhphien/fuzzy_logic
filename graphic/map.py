@@ -34,21 +34,21 @@ class Map(pygame.sprite.Sprite):
         self.get_edges()
         self.shortest_paths = self.find_shortest_paths()
         self.get_light_pos()
-        self.get_stone_pos()
+        # self.get_stone_pos()
 
     def get_map_nav(self):
         with xlrd.open_workbook('../media/toa-do.xlsx') as book:
-            sheet = book.sheet_by_index(0)
+            sheet = book.sheet_by_index(5)
             x_coordinate = [x for x in sheet.col_values(1)]
             y_coordinate = [y for y in sheet.col_values(2)]
-            for i in range (1, sheet.nrows):
+            for i in range(1, sheet.nrows):
                 MAP_NAVS.append((x_coordinate[i], y_coordinate[i]))
 
     def get_edges(self):
         with xlrd.open_workbook('../media/toa-do.xlsx') as book:
             sheet = book.sheet_by_index(1)
-            start_index = [x for x in sheet.col_values(0)]
-            end_index = [y for y in sheet.col_values(1)]
+            start_index = [x for x in sheet.col_values(6)]
+            end_index = [y for y in sheet.col_values(7)]
             for i in range(1, sheet.nrows):
                 EDGES.append((math.floor(start_index[i]), math.floor(end_index[i])))
 
@@ -57,20 +57,20 @@ class Map(pygame.sprite.Sprite):
             sheet = book.sheet_by_index(2)
             coor_x = [x for x in sheet.col_values(0)]
             coor_y = [y for y in sheet.col_values(1)]
-            index_nav = [ z for z in sheet.col_values(2)]
+            index_nav = [ z for z in sheet.col_values(3)]
 
             for i in range (1, len(coor_x)):
                 LIGHTS_POS.append((coor_x[i], coor_y[i], math.floor(index_nav[i])))
 
-    def get_stone_pos(self):
-        with xlrd.open_workbook('../media/toa-do.xlsx') as book:
-            sheet = book.sheet_by_index(3)
-            coor_x = [x for x in sheet.col_values(0)]
-            coor_y = [y for y in sheet.col_values(1)]
-            index_nav = [ z for z in sheet.col_values(2)]
-
-            for i in range (1, len(coor_x)):
-                STONES_POS.append((coor_x[i], coor_y[i], math.floor(index_nav[i])))
+    # def get_stone_pos(self):
+    #     with xlrd.open_workbook('../media/toa-do.xlsx') as book:
+    #         sheet = book.sheet_by_index(3)
+    #         coor_x = [x for x in sheet.col_values(0)]
+    #         coor_y = [y for y in sheet.col_values(1)]
+    #         index_nav = [ z for z in sheet.col_values(2)]
+    #
+    #         for i in range (1, len(coor_x)):
+    #             STONES_POS.append((coor_x[i], coor_y[i], math.floor(index_nav[i])))
 
 
     def find_shortest_paths(self):
@@ -96,18 +96,18 @@ class Map(pygame.sprite.Sprite):
         path.reverse()
         return path
 
-    def find_nearest_stone(self, pos):
-        index = -1
-        cur_pos = np.array([pos])
-        stones = np.array(STONES_POS)[:,: 2]
-        print(stones)
-        print(cur_pos)
-        distance = dt.cdist(cur_pos, stones, 'euclidean')
-        print(distance)
-        index = np.argmin(distance)
-        if distance[0, index] > 500:
-            index = -1
-        return index
+    # def find_nearest_stone(self, pos):
+    #     index = -1
+    #     cur_pos = np.array([pos])
+    #     stones = np.array(STONES_POS)[:,: 2]
+    #     print(stones)
+    #     print(cur_pos)
+    #     distance = dt.cdist(cur_pos, stones, 'euclidean')
+    #     print(distance)
+    #     index = np.argmin(distance)
+    #     if distance[0, index] > 500:
+    #         index = -1
+    #     return index
 
 
 

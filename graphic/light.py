@@ -21,23 +21,21 @@ class Light(pygame.sprite.Sprite):
         self.index_nav = index_nav
         self.rect = self.image.get_rect()
         self.rect.center = self.x, self.y
-
-
     def cal_remain_time(self):
         if self.status == 1:
-            return random.randint(1, 5)*60
-        return random.randint(5, 15)*60
+            return random.randint(1, 5) * config.FPS
+        return random.randint(3, 10) * config.FPS
 
     def update(self):
         self.remaining_time -=1
         if self.remaining_time == 0:
-            self.status = (self.status +1) % 3
+            self.status = (self.status + 1) % 3
             self.image = self.IMAGES[self.status]
             self.remaining_time = self.cal_remain_time()
 
     def render(self, screen):
         light_font = pygame.font.Font(None, 24)
-        label = light_font.render(str(math.floor(self.remaining_time/60)), True, config.COLOR_LIGHT[self.status])
+        label = light_font.render(str(math.floor(self.remaining_time/config.FPS)), True, config.COLOR_LIGHT[self.status])
 
         screen.blit(label, (self.rect[0] + 25, self.rect[1] + 15))
         screen.blit(self.image, (self.rect[0], self.rect[1]))
