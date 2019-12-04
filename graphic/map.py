@@ -7,6 +7,7 @@ import numpy as np
 from scipy.spatial import distance as dt
 from scipy.sparse.csgraph import shortest_path
 
+
 MAP_NAVS = []
 EDGES = []
 LIGHTS_POS = []
@@ -20,6 +21,20 @@ def find_index_target(target_position):
     target_distance = dt.cdist(tar_pos, coordinates_array, 'euclidean')
     target_index = np.argmin(target_distance)
     return target_index
+
+
+def calc_angle(start_x, start_y, target_x, target_y):
+    angle = math.atan2(abs(target_y - start_y), abs(target_x - start_x)) * 180 / math.pi
+    if target_y < start_y:
+        if target_x > start_x:
+            angle = 360 - angle
+        else:
+            angle += 180
+    else:
+        if target_x < start_x:
+            angle = 180 - angle
+    return angle
+
 
 
 class Map(pygame.sprite.Sprite):
@@ -96,6 +111,38 @@ class Map(pygame.sprite.Sprite):
         path.reverse()
         return path
 
+    def nor_stone_position(self, pos =(0,0),path = []):
+        nor_pos = (float('nan'), float('nan'))
+        index_nav = float('nan')
+        delta_land = config.LANE_SIZE / 2
+        if len(path) == 0:
+            return nor_pos, index_nav
+        for i in range(0, len(path) - 1):
+            start_nav = MAP_NAVS[path[i]]
+            tar_nav = MAP_NAVS[path[i + 1]]
+            dir = calc_angle(start_nav[0], start_nav[1], tar_nav[0], tar_nav[1])
+
+            if dir == 90:
+                if start_nav[0] - delta_land < pos[0] < start_nav[0] + delta_land and start_nav[1] < pos[1] < tar_nav[1]:
+                    nor_pos = (start_nav[0], pos[1])
+                    index_nav = path[i]
+                    break
+            elif dir == 0:
+                if start_nav[1] - delta_land < pos[1] < start_nav[1] + delta_land and start_nav[0] < pos[0] < tar_nav[0]:
+                    nor_pos = (pos[0], start_nav[1])
+                    index_nav = path[i]
+                    break
+            else:
+                # print('ok')
+                # print(dir, pos, start_nav, tar_nav)
+                if start_nav[0] < pos[0] < tar_nav[0] and start_nav[1] < pos[1] < tar_nav[1]:
+                    cor_x = (tar_nav[0] - start_nav[0]) *(pos[1] - start_nav[1]) / (tar_nav[1] - start_nav[1]) + start_nav[0]
+                    nor_pos = (cor_x, pos[1])
+                    index_nav = path[i]
+                    break
+
+        return nor_pos, index_nav
+
     # def find_nearest_stone(self, pos):
     #     index = -1
     #     cur_pos = np.array([pos])
@@ -118,5 +165,5 @@ class Map(pygame.sprite.Sprite):
 
 # map = Map(0, 0)
 # map.find_nearest_stone((760, 120))
-
-
+# pos, inx = map.nor_stone_position((545, 130), [0, 1, 2 ,3, 14,15, 13, 10])
+# print((pos, inx))

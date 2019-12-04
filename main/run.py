@@ -110,8 +110,11 @@ def main():
                     # if index_stone != -1:
                     #     stones[index_stone].toggle_stone()
 
-                    print(event.pos)
-                    rock.show_stone(event.pos, 5)
+                    # print(event.pos)
+                    nor_pos, indx_nav = map_city.nor_stone_position(event.pos, car_player.path)
+                    print(nor_pos, indx_nav)
+                    if not math.isnan(indx_nav):
+                        rock.show_stone(nor_pos, indx_nav, 5)
                     # print(index_stone)
             for i in range(len(lights)):
                 lights[i].update()

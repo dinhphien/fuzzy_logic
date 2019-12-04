@@ -37,9 +37,6 @@ def cal_deviation_angle(current_angle, desired_angle):
     return dev_angle
 
 
-
-
-
 class Car(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -48,8 +45,8 @@ class Car(pygame.sprite.Sprite):
         self.image = loader.load_image("car.png", False)
         self.image_ori = self.image
         self.color = config.BLACK
-        self.x = MAP_NAVS[0][0]
-        self.y = MAP_NAVS[0][1]
+        self.x = MAP_NAVS[0][0] - 5
+        self.y = MAP_NAVS[0][1] + 5
 
         self.dir = 90.0
         self.speed = 0.3
@@ -85,14 +82,33 @@ class Car(pygame.sprite.Sprite):
         self.stone = stone
 
     def cal_distance_stone(self):
-        if self.stone.status == config.HIDDEN:
-            return config.MAX_DISTANCE
-        else:
-            distance = math.hypot(self.stone.x - self.x, self.stone.y - self.y)
+        index_nav_stone = self.path.index(self.stone.index_nav)
+        if self.stone.status == config.HIDDEN or index_nav_stone < self.cur_nav:
+            distance = config.MAX_DISTANCE
+        elif index_nav_stone > self.cur_nav:
+            distance = 0
+            for i in range(self.cur_nav, index_nav_stone):
+                distance += math.hypot(MAP_NAVS[self.path[i]][0] - MAP_NAVS[self.path[i + 1]][0],
+                                       MAP_NAVS[self.path[i]][1] - MAP_NAVS[self.path[i + 1]][1])
+            distance += math.hypot(self.stone.x - MAP_NAVS[self.path[index_nav_stone]][0],
+                                   self.stone.y - MAP_NAVS[self.path[index_nav_stone]][1])
+            distance -= math.hypot(self.x - MAP_NAVS[self.path[self.cur_nav]][0], self.y - MAP_NAVS[self.path[self.cur_nav]][1])
             if distance < 15:
-                return config.MAX_DISTANCE
+                distance = config.MAX_DISTANCE
             else:
-                return distance - 15
+                distance -= 15
+        else:
+            distance_nav_stone = math.hypot(self.stone.x - MAP_NAVS[self.path[self.cur_nav]][0], self.stone.y - MAP_NAVS[self.path[self.cur_nav]][1])
+            distance_nav_car = math.hypot(self.x - MAP_NAVS[self.path[self.cur_nav]][0], self.y - MAP_NAVS[self.path[self.cur_nav]][1])
+            if distance_nav_car < distance_nav_stone:
+                distance = math.hypot(self.x - self.stone.x, self.y - self.stone.y)
+                if distance < 15:
+                    distance = config.MAX_DISTANCE
+                else:
+                    distance -= 15
+            else:
+                distance = config.MAX_DISTANCE
+        return distance
 
     # def set_stone(self, stones):
     #     stones_on_path = []
@@ -200,18 +216,13 @@ class Car(pygame.sprite.Sprite):
                         # print('turn left')
                         self.turn = config.LEFT
                         self.central_point = (MAP_NAVS[self.path[self.cur_nav + 1]][0], MAP_NAVS[self.path[self.cur_nav]][1])
-
-
-
                 # self.dir = self.desired_dir
                 # self.color = config.COLOR_LIGHT[self.cur_nav % 3]
             else:
                 self.speed = 0
                 return 0
         distance_light, status_light, time_remaining = self.distance_to_nearest_light()
-        # distance_stone = self.distance_to_nearest_stone()
         distance_stone = self.cal_distance_stone()
-        print(('distance_stone', distance_stone))
 
         self.deviation = self.cal_deviation((self.x, self.y), MAP_NAVS[self.path[self.cur_nav]],
                                        MAP_NAVS[self.path[self.cur_nav + 1]])
