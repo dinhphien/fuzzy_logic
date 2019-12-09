@@ -114,7 +114,7 @@ def main():
                     nor_pos, indx_nav = map_city.nor_stone_position(event.pos, car_player.path)
                     print(nor_pos, indx_nav)
                     if not math.isnan(indx_nav):
-                        rock.show_stone(nor_pos, indx_nav, 5)
+                        rock.show_stone(nor_pos, indx_nav, 4)
                     # print(index_stone)
             for i in range(len(lights)):
                 lights[i].update()
@@ -134,10 +134,10 @@ def main():
         # for i in range(len(stones)):
         #     stones[i].render(screen)
 
-        for i in range(len(tracks)):
-            image = font.render(str(i), True, config.RED)
-            screen.blit(image, (math.floor(tracks[i][0]), math.floor(tracks[i][1])))
-            pygame.draw.circle(screen, config.BLACK, (math.floor(tracks[i][0]), math.floor(tracks[i][1])), 5, 5)
+        # for i in range(len(tracks)):
+        #     image = font.render(str(i), True, config.RED)
+        #     screen.blit(image, (math.floor(tracks[i][0]), math.floor(tracks[i][1])))
+        #     pygame.draw.circle(screen, config.BLACK, (math.floor(tracks[i][0]), math.floor(tracks[i][1])), 5, 5)
 
         # for i in range(len(stones_pos)):
         #     pygame.draw.circle(screen, config.BLACK, (math.floor(stones_pos[i][0]), math.floor(stones_pos[i][1])), 5, 5)

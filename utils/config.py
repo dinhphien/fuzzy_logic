@@ -3,7 +3,7 @@
 HEIGHT_APP = 868
 WIDTH_APP = 1200
 
-FPS = 30
+FPS = 40
 CAPTION_APP = "Self-Driving Car"
 
 PI = 3.14
@@ -25,3 +25,6 @@ LANE_SIZE = 40
 STRAIGHT = 0
 LEFT = 1
 RIGHT = 2
+
+
+PARA = 0.5

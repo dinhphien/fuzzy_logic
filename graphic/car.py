@@ -45,8 +45,8 @@ class Car(pygame.sprite.Sprite):
         self.image = loader.load_image("car.png", False)
         self.image_ori = self.image
         self.color = config.BLACK
-        self.x = MAP_NAVS[0][0] - 5
-        self.y = MAP_NAVS[0][1] + 5
+        self.x = MAP_NAVS[0][0] - config.PARA
+        self.y = MAP_NAVS[0][1] + config.PARA
 
         self.dir = 90.0
         self.speed = 0.3
@@ -139,7 +139,6 @@ class Car(pygame.sprite.Sprite):
                 return distance, self.lights[self.cur_nav + 1].status, math.floor(self.lights[self.cur_nav + 1].remaining_time/60)
         return config.MAX_DISTANCE, 2, 10
 
-
     def cal_deviation(self, cur_pos, cur_nav, tar_nav):
         if self.turn == config.STRAIGHT:
             desir_angle = calculate_angle(cur_nav[0], cur_nav[1], tar_nav[0], tar_nav[1])
@@ -152,6 +151,7 @@ class Car(pygame.sprite.Sprite):
                 deviation = config.LANE_SIZE / 2 + distance_to_line
             else:
                 deviation = config.LANE_SIZE / 2 - distance_to_line
+
         else:
             distance_to_central_point = math.hypot(cur_pos[0] - self.central_point[0], cur_pos[1] - self.central_point[1])
             if self.turn == config.LEFT:
@@ -235,21 +235,21 @@ class Car(pygame.sprite.Sprite):
         steering_angle, speed = self.fuzzy_monitor.control(self.deviation, status_light, distance_light, time_remaining, distance_stone, self.angle_deviation)
 
         # steering:
-        if speed >= 0.02:
-            # adjust speed:
-            # self.speed += self.acceleration
-            self.speed = speed
-            # self.dir += self.angle_deviation
-            # self.dir = self.desired_dir + steering_angle
-            self.dir += steering_angle
-            # self.dir += x
+        # if speed >= 0.02:
+        # adjust speed:
+        # self.speed += self.acceleration
+        self.speed = speed
+        # self.dir += self.angle_deviation
+        # self.dir = self.desired_dir + steering_angle
+        self.dir += steering_angle
+        # self.dir += x
 
-            if self.dir < 0:
-                self.dir += 360
-            if self.dir > 360:
-                self.dir -= 360
-        else:
-            self.speed = 0
+        if self.dir < 0:
+            self.dir += 360
+        if self.dir > 360:
+            self.dir -= 360
+        # else:
+        #     self.speed = 0
 
     def move(self):
         self.control()

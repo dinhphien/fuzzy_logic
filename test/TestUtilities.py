@@ -41,8 +41,7 @@ from fuzzy_logic import defuzzier, fuzzier
 # print(y)
 # x = 0.6 - 0.5
 # print(x / 0.1)
-for i in range( 5, 5):
-    print(i)
+print(min(2, 3))
 
 
 

@@ -8,6 +8,13 @@ def nor_deviation(dev):
     return dev / config.LANE_SIZE
 
 
+def nor_steering_angle(angle):
+    steering_angle = angle
+    steering_angle -= 0.5
+    print('Steering angle', steering_angle)
+    return steering_angle * 15
+
+
 def nor_time_light(status_light, time_remaining):
     if status_light == 0:
         return 10 - time_remaining
@@ -140,20 +147,23 @@ class FuzzyController():
         print("//////////////////////////////////////////////////////////////////////////////////////")
         if len(inferences['stone']) > 0:
             # print("In stone fuzzy logic")
-            # print("////////////////////////////////////////////////////////////////////////////////////")
+            print("////////////////////////////////////////////////////////////////////////////////////")
             # print((deviation, status_light, distance_light, remaining_time, distance_stone))
             # print(dependencies)
             # print(inferences)
-            speed_stone_rule, de_values_speed = self.defuzzification(inferences['stone'], False)
+            speed_stone_rule, de_values_speed_stone = self.defuzzification(inferences['stone'], False)
             # print(("steering_angle: ", steering_angle))
             # print(('defuzification_steering: ', de_values_steering))
             # print(('speed_light ', speed_light_rule))
-            # print(('speed_stone', speed_stone_rule))
+            print(('defuzification_speed_stone: ', de_values_speed_stone))
+            print(('speed_stone', speed_stone_rule))
+            selected_speed = min(speed_stone_rule, speed_light_rule)
+            print(('selected_speed', selected_speed))
             # # print(('defuzification_speed: ', de_values_speed))
             # # print(("angle_deviation: ", angle_deviation))
             # # print(flag)
-            # print("//////////////////////////////////////////////////////////////////////////////////////")
-            return steering_angle, min(speed_stone_rule, speed_light_rule)
+            print("//////////////////////////////////////////////////////////////////////////////////////")
+            return steering_angle, selected_speed
         return steering_angle, speed_light_rule
 
 

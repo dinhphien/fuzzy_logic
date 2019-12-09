@@ -314,6 +314,215 @@ def defuzzify(Output_fuzzy_set, coefficient, flag):
         # denominator = 1
         # print(denominator)
         # return fx
+
+        # # steering:
+        # if Output_fuzzy_set == 'Hard_right':
+        #     if coefficient == 1:
+        #         def fx(x):
+        #             if 0.6 <= x < 0.75:
+        #                 return (x - 0.6) / 0.15
+        #             elif 0.75 <= x <= 1:
+        #                 return 1.0
+        #             else:
+        #                 return 0.0
+        #
+        #         def xfx(x):
+        #             if 0.6 <= x < 0.75:
+        #                 return (x - 0.6) * x / 0.15
+        #             elif 0.75 <= x <= 1:
+        #                 return 1.0 * x
+        #             else:
+        #                 return 0.0
+        #
+        #     else:
+        #         x0 = 0.15 * coefficient + 0.6
+        #
+        #         def fx(x):
+        #             if 0.6 <= x <= x0:
+        #                 return (x - 0.6) / 0.15
+        #             elif x0 < x <= 1.0:
+        #                 return coefficient
+        #             else:
+        #                 return 0.0
+        #
+        #         def xfx(x):
+        #             if 0.6 <= x <= x0:
+        #                 return (x - 0.6) * x / 0.15
+        #             elif x0 < x <= 1.0:
+        #                 return coefficient * x
+        #             else:
+        #                 return 0.0
+        #
+        # elif Output_fuzzy_set == 'Right':
+        #     if coefficient == 1:
+        #         def fx(x):
+        #             if 0.5 <= x <= 0.6:
+        #                 return (x - 0.5) / 0.1
+        #             elif 0.6 < x <= 0.75:
+        #                 return (0.75 - x) / 0.15
+        #             else:
+        #                 return 0.0
+        #
+        #         def xfx(x):
+        #             if 0.5 <= x <= 0.6:
+        #                 return (x - 0.5) * x / 0.1
+        #             elif 0.6 < x <= 0.75:
+        #                 return (0.75 - x) * x / 0.15
+        #             else:
+        #                 return 0.0
+        #     else:
+        #         x0 = 0.1 * coefficient + 0.5
+        #         x1 = 0.75 - 0.15 * coefficient
+        #
+        #         def fx(x):
+        #             if 0.5 <= x <= x0:
+        #                 return (x - 0.5) / 0.1
+        #             elif x0 < x <= x1:
+        #                 return coefficient
+        #             elif x1 < x <= 0.75:
+        #                 return (0.75 - x) / 0.15
+        #             else:
+        #                 return 0.0
+        #
+        #         def xfx(x):
+        #             if 0.5 <= x <= x0:
+        #                 return (x - 0.5) * x/ 0.1
+        #             elif x0 < x <= x1:
+        #                 return coefficient * x
+        #             elif x1 < x <= 0.75:
+        #                 return (0.75 - x) * x / 0.15
+        #             else:
+        #                 return 0.0
+        #
+        # elif Output_fuzzy_set == 'Straight':
+        #     if coefficient == 1:
+        #         def fx(x):
+        #             if 0.4 <= x <= 0.5:
+        #                 return (x - 0.4) / 0.1
+        #             elif 0.5 < x <= 0.6:
+        #                 return (0.6 - x) / 0.1
+        #             else:
+        #                 return 0.0
+        #
+        #         def xfx(x):
+        #             if 0.4 <= x <= 0.5:
+        #                 return (x - 0.4) * x / 0.1
+        #             elif 0.5 < x <= 0.6:
+        #                 return (0.6 - x) * x / 0.1
+        #             else:
+        #                 return 0.0
+        #
+        #     else:
+        #         x0 = 0.1 * coefficient + 0.4
+        #         x1 = 0.6 - 0.1 * coefficient
+        #         # print((x0, x1))
+        #
+        #         def fx(x):
+        #             if 0.4 <= x <= x0:
+        #                 return (x - 0.4) / 0.1
+        #             elif x0 < x <= x1:
+        #                 return coefficient
+        #             elif x1 < x <= 0.6:
+        #                 return (0.6 - x) / 0.1
+        #             else:
+        #                 return 0.0
+        #
+        #         def xfx(x):
+        #             if 0.4 <= x <= x0:
+        #                 return (x - 0.4) * x / 0.1
+        #             elif x0 < x <= x1:
+        #                 return coefficient * x
+        #             elif x1 < x <= 0.6:
+        #                 return (0.6 - x) * x / 0.1
+        #             else:
+        #                 return 0.0
+        #
+        # elif Output_fuzzy_set == 'Left':
+        #     if coefficient == 1:
+        #         def fx(x):
+        #             if 0.25 <= x <= 0.4:
+        #                 return (x - 0.25) / 0.15
+        #             elif 0.4 < x <= 0.5:
+        #                 return (0.5 - x) / 0.1
+        #             else:
+        #                 return 0.0
+        #
+        #         def xfx(x):
+        #             if 0.25 <= x <= 0.4:
+        #                 return (x - 0.25) * x / 0.15
+        #             elif 0.4 < x <= 0.5:
+        #                 return (0.5 - x) * x / 0.1
+        #             else:
+        #                 return 0.0
+        #
+        #     else:
+        #         x0 = 0.15 * coefficient + 0.25
+        #         x1 = 0.5 - 0.1 * coefficient
+        #
+        #         def fx(x):
+        #             if 0.25 < x <= x0:
+        #                 return (x - 0.25) / 0.15
+        #             elif x0 < x <= x1:
+        #                 return coefficient
+        #             elif x1 < x <= 0.5:
+        #                 return (0.5 - x) / 0.1
+        #             else:
+        #                 return 0.0
+        #
+        #         def xfx(x):
+        #             if 0.25 < x <= x0:
+        #                 return (x - 0.25) * x / 0.15
+        #             elif x0 < x <= x1:
+        #                 return coefficient * x
+        #             elif x1 < x <= 0.5:
+        #                 return (0.5 - x) * x / 0.1
+        #             else:
+        #                 return 0.0
+        #
+        # else:
+        #     if coefficient == 1:
+        #         def fx(x):
+        #             if 0 <= x <= 0.25:
+        #                 return 1.0
+        #             elif 0.25 < x <= 0.4:
+        #                 return (0.4 - x) / 0.15
+        #             else:
+        #                 return 0.0
+        #
+        #         def xfx(x):
+        #             if 0 <= x <= 0.25:
+        #                 return 1.0 * x
+        #             elif 0.25 < x <= 0.4:
+        #                 return (0.4 - x) * x / 0.15
+        #             else:
+        #                 return 0.0
+        #
+        #     else:
+        #         x0 = 0.4 - 0.15 * coefficient
+        #
+        #         def fx(x):
+        #             if 0 <= x <= x0:
+        #                 return coefficient
+        #             elif x0 < x <= 0.4:
+        #                 return (0.4 - x) / 0.15
+        #             else:
+        #                 return 0.0
+        #
+        #         def xfx(x):
+        #             if 0 <= x <= x0:
+        #                 return coefficient * x
+        #             elif x0 < x <= 0.4:
+        #                 return (0.4 - x)  * x/ 0.15
+        #             else:
+        #                 return 0.0
+        #
+        # numerator, err1 = quad(xfx, 0, 1.0, limit=100)
+        # # numerator = 1
+        # # print(numerator)
+        # denominator, err2 = quad(fx, 0, 1.0, limit=100)
+        # # denominator = 1
+        # # print(denominator)
+        # # return fx
     else:
         # speed:
         # print((Output_fuzzy_set, coefficient))
